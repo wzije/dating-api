@@ -1,10 +1,8 @@
-# Dating Service Demo
+# Dating API Demo
 
-this project is used for study case
+This API allow you to find interesting partner for you. This API Provide endpoints to register and login only.  
 
 ## Requirement
-
-## Dependencies
 
 ## Structure
 
