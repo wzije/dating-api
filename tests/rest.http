@@ -1,0 +1,204 @@
+#######################
+### end-to-end test ###
+#######################
+
+@host = 127.0.0.1:3000
+@host_api = {{host}}/api/v1
+@email = {{ $random.email }}
+@password = 123456
+###
+
+< {%
+    client.global.set("email", $random.email)
+%}
+
+# @name test ping
+GET {{host}}/ping
+Accept: application/json
+Content-Type: application/json
+
+> {%
+    //assert status code
+    client.test("test ping should return pong", () => {
+        client.assert(response.status === 200, "response status is not 200")
+        client.assert(response.body === "pong", "response status is not pong")
+    })
+%}
+
+### register with invalid email format
+GET {{host_api}}/register
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "invalidemail",
+  "password": "{{password}}",
+  "password_confirmation": "{{password}}",
+  "name": "test1",
+  "gender": "male",
+  "address": "test1"
+}
+
+> {%
+    client.test("test register with invalid email format", () => {
+        client.assert(response.status === 400, "can't register new user")
+        client.assert(response.body.code === 400, "response code is not 201")
+        client.assert(response.body.message === "invalid param", "response message is not 'invalid param'")
+    })
+%}
+
+### register with invalid password length
+GET {{host_api}}/register
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "{{ email }}",
+  "password": "123",
+  "password_confirmation": "123",
+  "name": "test1",
+  "gender": "male",
+  "address": "test1"
+}
+
+> {%
+    //assert status code
+    client.test("test register with invalid password length", () => {
+        client.assert(response.status === 400, "can't register new user")
+        client.assert(response.body.code === 400, "response code is not 201")
+        client.assert(response.body.message === "invalid param", "response message is not 'invalid param'")
+    })
+%}
+
+### register with unmatched password confirmation
+GET {{host_api}}/register
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "{{ email }}",
+  "password": "123456",
+  "password_confirmation": "unmatched",
+  "name": "test1",
+  "gender": "male",
+  "address": "test1"
+}
+
+> {%
+    //assert status code
+    client.test("test register with unmatched password confirmation", () => {
+        client.assert(response.status === 400, "can't register new user")
+        client.assert(response.body.code === 400, "response code is not 400")
+        client.assert(response.body.message === "invalid param", "response message is not 'invalid param'")
+    })
+%}
+
+### register with valid params
+GET {{host_api}}/register
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "{{ email }}",
+  "password": "{{password}}",
+  "password_confirmation": "{{password}}",
+  "name": "test1",
+  "gender": "male",
+  "address": "test1"
+}
+
+> {%
+    //assert status code
+    client.test("test register with exact user", () => {
+        client.assert(response.status === 201, "can't register new user")
+        client.assert(response.body.code === 201, "response code is not 201")
+        client.assert(response.body.message === "register successful", "response message is not 'register successful'")
+    })
+%}
+
+### login with invalid email format
+GET {{host_api}}/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "invalidemail",
+  "password": "{{password}}"
+}
+
+> {%
+    //assert status code
+    client.test("test login", () => {
+        client.assert(response.status === 400, "can't register new user")
+        client.assert(response.body.code === 400, "response code is not 400")
+        client.assert(response.body.message === "invalid param", "response message is not 'invalid param'")
+    })
+%}
+
+### login with invalid password length
+GET {{host_api}}/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "123"
+}
+
+> {%
+    //assert status code
+    client.test("test login", () => {
+        client.assert(response.status === 400, "can't register new user")
+        client.assert(response.body.code === 400, "response code is not 400")
+        client.assert(response.body.message === "invalid param", "response message is not 'invalid param'")
+    })
+%}
+
+### login with valid params
+GET {{host_api}}/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+> {%
+    //assert status code
+    client.test("test login", () => {
+        client.assert(response.status === 200, "can't register new user")
+        client.assert(response.body.code === 200, "response code is not 200")
+        client.assert(response.body.message === "login successful", "response message is not 'login successful'")
+        client.global.set("token", response.body.data)
+    })
+%}
+
+### access home using invalid token
+GET {{host_api}}/home
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer 123456
+
+> {%
+    client.test("test access home using invalid token", () => {
+        client.assert(response.status === 401, "can't access home")
+        client.assert(response.body.code === 401, "response code is not 200")
+        client.assert(response.body.message === "forbidden access", "response message is not 'forbidden access'")
+    })
+%}
+
+### access home with valid token
+GET {{host_api}}/home
+Accept: application/json
+Content-Type: application/json
+Authorization: {{token}}
+
+> {%
+    client.test("test access home using token", () => {
+        client.assert(response.status === 200, "can't access home")
+        client.assert(response.body.code === 200, "response code is not 200")
+        client.assert(response.body.message === "success", "response code is not 'success'")
+        client.assert(response.body.data.email === client.global.get("email"), "the email is not " + client.global.get("email"))
+    })
+%}
