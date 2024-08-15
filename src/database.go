@@ -3,6 +3,7 @@ package src
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 type Database interface {
@@ -19,7 +20,7 @@ func (r database) GetUserByEmail(email string) (*User, error) {
 	query := "SELECT * FROM users WHERE email = ?"
 
 	err := r.db.QueryRow(query, email).
-		Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Gender, &user.Address)
+		Scan(&user.Base.ID, &user.Email, &user.Username, &user.Password, &user.Base.CreatedAt, &user.Base.UpdatedAt)
 
 	if err != nil {
 		return nil, err
@@ -30,11 +31,11 @@ func (r database) GetUserByEmail(email string) (*User, error) {
 
 func (r database) StoreUser(user User) (*int64, error) {
 
-	query := "INSERT INTO `users` (`name`, `password`, `email`, `gender`, `address`) VALUES (?, ?, ?, ?, ?)"
+	query := "INSERT INTO `users` (`username`, `password`, `email`, created_at) VALUES (?, ?, ?, ?)"
 
 	result, err := r.db.ExecContext(
 		context.Background(),
-		query, &user.Name, &user.Password, &user.Email, &user.Gender, user.Address)
+		query, &user.Username, &user.Password, &user.Email, time.Now())
 
 	if err != nil {
 		return nil, err

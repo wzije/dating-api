@@ -19,12 +19,10 @@ var handlerMock = NewHandler(&dbMock)
 func userData() User {
 	hashPassword, _ := HashPassword("123456")
 	expectUser := User{
-		ID:       0,
+		Base:     Base{ID: 0},
+		Username: "test",
 		Email:    "test@test.com",
 		Password: hashPassword,
-		Name:     "test",
-		Gender:   "male",
-		Address:  "jakarta",
 	}
 	return expectUser
 }
@@ -49,14 +47,11 @@ func TestHandler_Register(t *testing.T) {
 
 	expectUser := userData()
 
-	ID := int64(expectUser.ID)
+	ID := int64(expectUser.Base.ID)
 	dbMock.Mock.On("StoreUser", mock.Anything).Return(&ID, nil)
 
 	registerRequest := RegisterRequest{
 		Email:                "test@gmail.com",
-		Name:                 "test",
-		Gender:               "male",
-		Address:              "jakarta",
 		Password:             "123456",
 		PasswordConfirmation: "123456",
 	}
@@ -81,9 +76,6 @@ func TestHandler_Register(t *testing.T) {
 
 		registerRequest := RegisterRequest{
 			Email:                "test@gmail.com",
-			Name:                 "test",
-			Gender:               "male",
-			Address:              "jakarta",
 			Password:             "123456",
 			PasswordConfirmation: "123456",
 		}
@@ -181,15 +173,7 @@ func TestHandler_Register(t *testing.T) {
 func TestHandler_Login(t *testing.T) {
 	app.Get("/login", handlerMock.Login)
 
-	hashPassword, _ := HashPassword("123456")
-	expectUser := User{
-		ID:       0,
-		Email:    "test@test.com",
-		Password: hashPassword,
-		Name:     "test",
-		Gender:   "male",
-		Address:  "jakarta",
-	}
+	expectUser := userData()
 
 	dbMock.Mock.On("GetUserByEmail", expectUser.Email).Return(&expectUser, nil)
 
@@ -298,15 +282,7 @@ func TestHandler_AccessHome(t *testing.T) {
 
 	t.Run("test with token should success", func(t *testing.T) {
 
-		hashPassword, _ := HashPassword("123456")
-		user := User{
-			ID:       0,
-			Email:    "test@test.com",
-			Password: hashPassword,
-			Name:     "test",
-			Gender:   "male",
-			Address:  "jakarta",
-		}
+		user := userData()
 
 		token, _ := GenerateToken(&user)
 

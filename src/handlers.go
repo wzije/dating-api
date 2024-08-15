@@ -3,6 +3,7 @@ package src
 import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
+	"strings"
 )
 
 type Handler interface {
@@ -42,12 +43,11 @@ func (c handler) Register(ctx *fiber.Ctx) error {
 		return JsonError(ctx, fiber.StatusBadRequest, errors.New("unable to hash password"))
 	}
 
+	username := strings.Split(request.Email, "@")
 	user := User{
+		Username: username[0],
 		Email:    request.Email,
 		Password: hashedPassword,
-		Name:     request.Name,
-		Gender:   request.Gender,
-		Address:  request.Address,
 	}
 
 	_, err = c.database.StoreUser(user)

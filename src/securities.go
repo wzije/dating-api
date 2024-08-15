@@ -36,12 +36,10 @@ var SecretKey = "custom-dating-private-key"
 
 func GenerateToken(user *User) (string, error) {
 	claims := jwt.MapClaims{
-		"id":      user.ID,
-		"name":    user.Name,
-		"email":   user.Email,
-		"address": user.Address,
-		"gender":  user.Gender,
-		"exp":     time.Now().Add(time.Hour * 72).Unix(),
+		"id":       user.Base.ID,
+		"username": user.Username,
+		"email":    user.Email,
+		"exp":      time.Now().Add(time.Hour * 72).Unix(),
 	}
 
 	// Create token
@@ -72,13 +70,12 @@ func ParsePayload(ctx *fiber.Ctx) {
 	jwtToken := ctx.Locals("jwtKey").(*jwt.Token)
 	claims := *(jwtToken.Claims.(*jwt.MapClaims))
 
+	id := int(claims["id"].(float64))
 	PayloadData = &Payload{
 		User{
-			ID:      int(claims["id"].(float64)),
-			Email:   claims["email"].(string),
-			Name:    claims["name"].(string),
-			Gender:  claims["gender"].(string),
-			Address: claims["address"].(string),
+			Base:     Base{ID: id},
+			Email:    claims["email"].(string),
+			Username: claims["username"].(string),
 		},
 	}
 }
