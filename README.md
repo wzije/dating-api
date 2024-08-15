@@ -86,4 +86,4 @@ Follow these steps to install and run service:
     - Ensure your application is running
     - Open the project, then Go into the http_tests directory
     - Open `http_test.http` file using code editor like vscode / goland
-    - Click Run Code 
+    - Click Run Request / Run All Request 
