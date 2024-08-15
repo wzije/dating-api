@@ -81,6 +81,12 @@ Follow these steps to install and run service:
     ```bash
     cd dating-api
     go test $(go list ./...) -v
+   
+    #additional
+    go fmt $(go list ./...)
+    go vet $(go list ./...)
+    golangci-lint run  src .  -v  #if you have install golangci-lint on your machine
+   
     ```
 2. To run Rest HTTP test (End-to-End test)
     - Ensure your application is running
