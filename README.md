@@ -7,7 +7,6 @@ This API allow you to find interesting partner for you. This API Provide endpoin
 - Go: version go1.22.4 or newer
 - Mysql: version 5.7.36 or newer
 - Git: To Clone the repository
-- Golangci-lint (Optional): version 1.59.1 for lint test
 
 ## Project Structure
 
@@ -81,15 +80,10 @@ Follow these steps to install and run service:
     ```bash
     cd dating-api
     go test $(go list ./...) -v
-   
-    #additional
-    go fmt $(go list ./...)
-    go vet $(go list ./...)
-    golangci-lint run  src .  -v  #if you have install golangci-lint on your machine
-   
+ 
     ```
 2. To run Rest HTTP test (End-to-End test)
-    - Ensure your application is running
+    - Ensure your application is Running 🔥
     - Open the project, then Go into the http_tests directory
     - Open `http_test.http` file using code editor like vscode / goland
     - Click Run Request / Run All Request 
