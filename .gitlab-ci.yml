@@ -73,6 +73,8 @@ build_image:
 
 deploy:
   stage: deploy
+  except:
+    - main
   before_script:
     - chmod 400 $SSH_PRIVATE_KEY
   script:
