@@ -71,6 +71,8 @@ build_image:
     - docker build -t $CI_REGISTRY_IMAGE:latest .
     - docker push $CI_REGISTRY_IMAGE:latest
 
+# This is a manual deployment
+# so this stage will not running without manual action
 deploy:
   stage: deploy
   except:
