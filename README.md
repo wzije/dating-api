@@ -1,6 +1,7 @@
-# Dating API Demo
+# Simple Dating API Demo
 
-This API allow you to find interesting partner for you. This API Provide endpoints to `Register` and `Login` only.
+This API service designed to support the core functionalities of a dating application. 
+Right now it's Provide endpoints to `Register` and `Login` only.
 
 ## Prerequisite
 
@@ -86,4 +87,18 @@ Follow these steps to install and run service:
     - Ensure your application is Running 🔥
     - Open the project, then Go into the http_tests directory
     - Open `http_test.http` file using code editor like vscode / goland
-    - Click Run Request / Run All Request 
+    - Click Run Request / Run All Request
+
+## Integration & Deployment
+
+This automation work on `Gitlab` only.
+Before starting, ensure you have set up your environment variables in the GitLab configuration.
+
+Follow these steps to run the integration code:
+
+1. Create a new branch with the prefix feature, e.g., `git checkout -b feature-1`.
+2. Push the branch to the GitLab repository using `git push gitlab feature-1`.
+3. After pushing the code, the GitLab pipeline will run automatically, and you can monitor it on the GitLab pipeline
+   page under the build menu.
+
+___
